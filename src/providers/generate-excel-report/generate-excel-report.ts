@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 // import { Workbook } from 'exceljs';
 import { File } from '@ionic-native/file'
+import { Platform } from 'ionic-angular';
 import * as XLSX from 'xlsx';
 
 @Injectable()
 export class GenerateExcelReportProvider {
 
-  constructor(public http: HttpClient, public file: File) {
+  constructor(public http: HttpClient, public file: File, public platform: Platform) {
     console.log('Hello GenerateExcelReportProvider Provider');
   }
 
@@ -48,11 +49,18 @@ export class GenerateExcelReportProvider {
     XLSX.utils.book_append_sheet(wb, log_sheet, log_sheet_name)
 
     try {
-      let folderName = 'Lactation'
       let fileName = 'export_excel.xlsx'
-      let fileInString = XLSX.write(wb, {type: 'array'})
+      // console.log(this.platform._platforms)
+
+      if(this.platform.is('core'))
+        XLSX.writeFile(wb, fileName);
+      else if(this.platform.is('mobile')) {
+        this.exportToMobileDevice(wb, fileName)
+      }
+
+      
       // await this.file.createFile(this.file.externalRootDirectory, 'export_file.xlsx', true)
-      await this.file.writeFile(this.file.externalRootDirectory, fileName, fileInString, {replace: true, append: false})
+      
       // XLSX.writeFile(wb, 'out_file.xlsx');
 
       // XLSX.write(wb)
@@ -61,26 +69,16 @@ export class GenerateExcelReportProvider {
     } catch (error) {
       console.log(error)
     }
-    
-
-
-
-
-    // let wbook = new Workbook();
-
-  //   wbook.addWorksheet('baby')
-  //   wbook.addWorksheet('logFeed')
-
-  //   let sheet: Worksheet =  wbook.getWorksheet('baby')
-  //   sheet.addRow(1);
-
-  //   let row: Row = sheet.getRow(0);
-  //   let cell: Cell =  row.getCell(0);
-  //   cell.value = 'sad';
-
-  //   wbook.xlsx.writeFile('D:\opt\lactation')
-  //   .then(dat => console.log('successfull') )
-  //   .catch( error => console.log(error) )
   }
+
+  async exportToMobileDevice(wb, fileName) {
+    let folderName = 'Lactation'
+    let fileToArray = XLSX.write(wb, { type: 'array' })
+    await this.file.writeFile(this.file.externalRootDirectory, fileName, fileToArray, {
+      replace: true,
+      append: false
+    })
+  }
+
 
 }

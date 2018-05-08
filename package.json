@@ -9,7 +9,11 @@
     "build": "ionic-app-scripts build",
     "lint": "ionic-app-scripts lint",
     "ionic:build": "ionic-app-scripts build",
-    "ionic:serve": "ionic-app-scripts serve"
+    "ionic:serve": "ionic-app-scripts serve",
+    "electron": "electron .",
+    "electron dist": "electron .",
+    "ebuild": "node_modules/.bin/build"
+
   },
   "dependencies": {
     "@angular/animations": "5.2.10",
@@ -46,9 +50,28 @@
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.1.9",
+    "@types/electron": "^1.6.10",
+    "electron": "^2.0.0",
+    "electron-builder": "^20.11.1",
     "typescript": "~2.6.2"
   },
   "description": "An Ionic project",
+  
+  "main": "electron/electron.js",
+  "config": {
+    "ionic_bundler": "webpack",
+    "ionic_webpack": "./config/webpack.config.js"
+  },
+  "build": {
+    "appId": "com.lohanitech.ionic-electron-test",
+    "electronVersion": "1.6.2",
+    "asar": false,
+    "files": [
+      "www/**/*",
+      "electron/*"
+    ]
+  },
+
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
